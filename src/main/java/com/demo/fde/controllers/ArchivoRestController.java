@@ -108,7 +108,12 @@ public class ArchivoRestController {
 		log.info(carpetaOrigen + "/" + nombreArchivo);
 
 		try {
-			ZipUtil.decompressZip(carpetaOrigen + "/" + nombreArchivo, carpetaDestino);
+			if((actual.getExtension().toLowerCase()).equals("zip")) {
+				ZipUtil.decompressZip(carpetaOrigen + "/" + nombreArchivo, carpetaDestino);
+				
+			} else if((actual.getExtension().toLowerCase()).equals("7z")) {
+				ZipUtil.decompress7z(carpetaOrigen + "/" + nombreArchivo, carpetaDestino);
+			}
 			
 			//TO-DO actualizar estado en DB
 			

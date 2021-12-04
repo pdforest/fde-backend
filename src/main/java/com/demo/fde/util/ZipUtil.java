@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+
 public class ZipUtil {
 
 	public static void decompressZip(String fileZip, String destDir) throws IOException, FileNotFoundException {
@@ -60,6 +63,26 @@ public class ZipUtil {
 	    return destFile;
 	}
 
-	
+    public static void decompress7z(String in, String destDir) throws IOException {
+        SevenZFile sevenZFile = new SevenZFile(new File(in));
+        File destination = new File(destDir);
+        SevenZArchiveEntry entry;
+        while ((entry = sevenZFile.getNextEntry()) != null){
+            if (entry.isDirectory()){
+                continue;
+            }
+            File curfile = new File(destination, entry.getName());
+            File parent = curfile.getParentFile();
+            if (!parent.exists()) {
+                parent.mkdirs();
+            }
+            FileOutputStream out = new FileOutputStream(curfile);
+            byte[] content = new byte[(int) entry.getSize()];
+            sevenZFile.read(content, 0, content.length);
+            out.write(content);
+            out.close();
+        }
+    }
+
 	
 }
