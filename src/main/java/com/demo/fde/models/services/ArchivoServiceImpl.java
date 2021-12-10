@@ -24,9 +24,9 @@ public class ArchivoServiceImpl implements IArchivoService {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Page<Archivo> findAll(Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
+		return archivoDao.findAll(pageable);
 	}
 
 	@Override
@@ -35,7 +35,6 @@ public class ArchivoServiceImpl implements IArchivoService {
 		return archivoDao.findById(id).orElse(null);
 	}
 
-
 	@Override
 	@Transactional
 	public Archivo save(Archivo archivo) {
@@ -43,9 +42,9 @@ public class ArchivoServiceImpl implements IArchivoService {
 	}
 
 	@Override
+	@Transactional
 	public void delete(Long id) {
-		// TODO Auto-generated method stub
-
+		archivoDao.deleteById(id);
 	}
 
 }
