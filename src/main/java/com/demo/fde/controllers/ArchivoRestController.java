@@ -66,7 +66,12 @@ public class ArchivoRestController {
 			log.info(rutaArchivo.toString());
 			
 			try {
-				Files.copy(zipfile.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+				//Files.copy(zipfile.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
+				
+				File target = new File(rutaArchivo.toString());
+				zipfile.transferTo(target);
+				
+				
 			} catch (IOException e) {
 				response.put("mensaje", "Error al subir el archivo: " + nombreArchivo);
 				response.put("error", e.getMessage() + " : " + e.getCause().getMessage());
