@@ -31,6 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.demo.fde.models.entity.Archivo;
 import com.demo.fde.models.services.IArchivoService;
 import com.demo.fde.util.ZipUtil;
+import com.demo.fde.util.Extract;
+import com.demo.fde.util.ExtractionException;
 
 @RestController
 @RequestMapping("/api")
@@ -66,11 +68,7 @@ public class ArchivoRestController {
 			log.info(rutaArchivo.toString());
 			
 			try {
-				//Files.copy(zipfile.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
-				
-				File target = new File(rutaArchivo.toString());
-				zipfile.transferTo(target);
-				
+				Files.copy(zipfile.getInputStream(), rutaArchivo, StandardCopyOption.REPLACE_EXISTING);
 				
 			} catch (IOException e) {
 				response.put("mensaje", "Error al subir el archivo: " + nombreArchivo);
@@ -113,15 +111,18 @@ public class ArchivoRestController {
 		log.info(carpetaOrigen + "/" + nombreArchivo);
 
 		try {
-			if((actual.getExtension().toLowerCase()).equals("zip")) {
-				ZipUtil.decompressZip(carpetaOrigen + "/" + nombreArchivo, carpetaDestino);
+			//if((actual.getExtension().toLowerCase()).equals("zip")) {
+			//	ZipUtil.decompressZip(carpetaOrigen + "/" + nombreArchivo, carpetaDestino);
 				
-			} else if((actual.getExtension().toLowerCase()).equals("7z")) {
-				ZipUtil.decompress7z(carpetaOrigen + "/" + nombreArchivo, carpetaDestino);
-			}
+			//} else if((actual.getExtension().toLowerCase()).equals("7z")) {
+			//	ZipUtil.decompress7z(carpetaOrigen + "/" + nombreArchivo, carpetaDestino);
+			//}
+			boolean test = false;
+			String filter = "*.txt"; //null;
+			new Extract(carpetaOrigen + "/" + nombreArchivo, carpetaDestino, test, filter).extract();
 			
 			//TO-DO actualizar estado en DB
-			
+		/*	
 		} catch (FileNotFoundException e) {
 			response.put("mensaje", "Error no se encontro el archivo: " + nombreArchivo);
 			response.put("error", e.getMessage());
@@ -131,11 +132,17 @@ public class ArchivoRestController {
 			response.put("mensaje", "Error al descomprimir el archivo: " + nombreArchivo);
 			response.put("error", e.getMessage());
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-
+		 */
 		} catch (DataAccessException e) {
 			response.put("mensaje", "Error al actualizar el archivo en la base de datos");
 			response.put("error", e.getMessage() + " : " + e.getMostSpecificCause().getMessage());
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+		} catch (ExtractionException e) {
+			response.put("mensaje", "Error al descomprimir el archivo: " + nombreArchivo);
+			response.put("error", e.getMessage());
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+	
 		}
 
 		response.put("mensaje", "El archivo " + nombreArchivo + " se proceso con exito");
